@@ -11,7 +11,6 @@ const app = express();
 
 app.use(cors());
 app.use(json());
-
 let todos = [
 	{
 		id: nanoid(),
@@ -39,23 +38,31 @@ let todos = [
 		completed: false,
 	},
 ];
+let response ={
+	data:todos,
+	status:404,
+	messageCode:"List of Todo"
+}
 
-app.get('/todos', (req, res) => res.send(todos));
+app.get('/todos', (req, res) => res.send(response));
 
 app.post('/todos', (req, res) => {
 	const todo = { title: req.body.title, id: nanoid(), completed: false };
 	todos.push(todo);
-	return res.send(todo);
+	return res.send(response);;
 });
 
 app.patch('/todos/:id', (req, res) => {
 	const id = req.params.id;
+	console.log(id)
+	console.log(req.body)
 	const index = todos.findIndex((todo) => todo.id == id);
 	const completed = Boolean(req.body.completed);
 	if (index > -1) {
 		todos[index].completed = completed;
 	}
-	return res.send(todos[index]);
+	return res.send({data:todos[index],status:200,
+		messageCode:"Changed"});
 });
 
 app.delete('/todos/:id', (req, res) => {
@@ -65,7 +72,7 @@ app.delete('/todos/:id', (req, res) => {
 		todos.splice(index, 1);
 	}
 
-	res.send(todos);
+	res.send(response);
 });
 
 const PORT = 7000;
